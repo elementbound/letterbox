@@ -1,8 +1,25 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 1em monospace;
+
+  background-color: black;
+  color: white;
+}
+
+.highlight {
+  background-color: white;
+  color: black;
 }
 
 a {
   color: #00B7FF;
+}
+
+.letterbox {
+  position: absolute;
+
+  left: 50vw;
+  top: 50vh;
+
+  /* border: 1px solid red; */
 }
