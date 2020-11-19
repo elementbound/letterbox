@@ -3,12 +3,23 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "start:dev": "nodemon ./bin/www",
+    "lint": "eslint bin/www routes/**.js app.js",
+    "doc": "jsdoc -r -d docs routes"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.13.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "nodemon": "^2.0.6"
   }
 }
