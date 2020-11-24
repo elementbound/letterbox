@@ -1,7 +1,11 @@
+import UserLetterChangeEvent from './events/user-letter-change'
+import { generateItems, updateFocus, handleKey } from './letters'
+
 let context = {
   width: 80,
   height: 24,
 
+  letterbox: undefined,
   letters: [],
   focus: 0
 }
@@ -18,72 +22,22 @@ function fitToScreen (element, scale) {
   element.style.top = (window.innerHeight - element.offsetHeight) / 2
 }
 
-function generateItems (target, width, height) {
-  const result = []
+function wsConnect () {
+  const protocol = location.protocol.startsWith('https') ? 'wss' : 'ws'
+  const url = `${protocol}://${window.location.host}/`
 
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const element = document.createElement('span')
-      element.innerText = String.fromCharCode(48 + 64 * Math.random())
-      target.appendChild(element)
+  console.log('Connecting to', url)
 
-      result.push(element)
-    }
-
-    const lineBreak = document.createElement('br')
-    target.appendChild(lineBreak)
+  const webSocket = new WebSocket(url)
+  webSocket.onopen = () => {
+    console.log('Socket open!')
   }
-
-  return result
-}
-
-function moveFocus (context, offset) {
-  let result = (context.focus + offset) % context.letters.length
-
-  while (result < 0) { result += context.letters.length }
-
-  return {
-    ...context,
-    focus: result
-  }
-}
-
-function updateFocus (context) {
-  context.letters.forEach((letter, index) =>
-    index === context.focus
-      ? letter.classList.add('highlight')
-      : letter.classList.remove('highlight')
-  )
-}
-
-function handleKey (e) {
-  let isMove = false
-
-  if (e.code === 'ArrowRight') {
-    isMove = true
-    context = moveFocus(context, 1)
-  } else if (e.code === 'ArrowLeft') {
-    isMove = true
-    context = moveFocus(context, -1)
-  } else if (e.code === 'ArrowUp') {
-    isMove = true
-    context = moveFocus(context, -context.width)
-  } else if (e.code === 'ArrowDown') {
-    isMove = true
-    context = moveFocus(context, context.width)
-  } else if (e.key.length === 1) {
-    context.letters[context.focus].innerText = e.key.match(/\s/)
-      ? '_'
-      : e.key
-    context = moveFocus(context, 1)
-    isMove = 1
-  }
-
-  if (isMove) { updateFocus(context) }
 }
 
 function boot () {
   const letterbox = document.querySelector('.letterbox')
+  context.letterbox = letterbox
+
   const letters = generateItems(letterbox, context.width, context.height)
   fitToScreen(letterbox, 0.9)
 
@@ -93,7 +47,15 @@ function boot () {
   context.letters = letters
   updateFocus(context)
 
-  document.addEventListener('keydown', handleKey)
+  document.addEventListener('keydown', event => {
+    context = handleKey(context, event)
+  })
+
+  letterbox.addEventListener(UserLetterChangeEvent.eventName, event => {
+    console.log('User letter change!', event)
+  })
+
+  wsConnect()
 }
 
 boot()

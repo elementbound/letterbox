@@ -7,6 +7,7 @@
 const app = require('../app')
 const debug = require('debug')('letterbox-frontend:server')
 const http = require('http')
+const ws = require('ws')
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +21,11 @@ app.set('port', port)
  */
 
 const server = http.createServer(app)
+
+/**
+ * Create WS server.
+ */
+const wsServer = new ws.Server({ server })
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -86,3 +92,10 @@ function onListening () {
     : 'port ' + addr.port
   debug('Listening on ' + bind)
 }
+
+/**
+ * Listen to WS connect events
+ */
+wsServer.on('connection', socket => {
+  console.log('New connection!')
+})
