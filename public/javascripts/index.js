@@ -6,10 +6,7 @@ let context = {
   focus: 0
 }
 
-function fitToScreen(element, scale) {
-  const viewMin = Math.min(window.innerWidth, window.innerHeight)
-  const boxMax = Math.max(element.offsetWidth, element.offsetHeight)
-
+function fitToScreen (element, scale) {
   const finalScale = scale * Math.min(
     window.innerWidth / element.offsetWidth,
     window.innerHeight / element.offsetHeight
@@ -21,30 +18,29 @@ function fitToScreen(element, scale) {
   element.style.top = (window.innerHeight - element.offsetHeight) / 2
 }
 
-function generateItems(target, width, height) {
+function generateItems (target, width, height) {
   const result = []
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const element = document.createElement("span")
+      const element = document.createElement('span')
       element.innerText = String.fromCharCode(48 + 64 * Math.random())
       target.appendChild(element)
 
       result.push(element)
     }
 
-    const lineBreak = document.createElement("br")
+    const lineBreak = document.createElement('br')
     target.appendChild(lineBreak)
   }
 
   return result
 }
 
-function moveFocus(context, offset) {
+function moveFocus (context, offset) {
   let result = (context.focus + offset) % context.letters.length
 
-  while (result < 0)
-    result += context.letters.length
+  while (result < 0) { result += context.letters.length }
 
   return {
     ...context,
@@ -52,15 +48,15 @@ function moveFocus(context, offset) {
   }
 }
 
-function updateFocus(context) {
-  context.letters.forEach((letter, index) => 
-    index == context.focus
+function updateFocus (context) {
+  context.letters.forEach((letter, index) =>
+    index === context.focus
       ? letter.classList.add('highlight')
       : letter.classList.remove('highlight')
   )
 }
 
-function boot() {
+function boot () {
   const letterbox = document.querySelector('.letterbox')
   const letters = generateItems(letterbox, context.width, context.height)
   fitToScreen(letterbox, 0.9)
@@ -74,19 +70,19 @@ function boot() {
   document.addEventListener('keydown', e => {
     let isMove = false
 
-    if (e.code == 'ArrowRight') {
+    if (e.code === 'ArrowRight') {
       isMove = true
       context = moveFocus(context, 1)
-    } else if (e.code == 'ArrowLeft') {
+    } else if (e.code === 'ArrowLeft') {
       isMove = true
       context = moveFocus(context, -1)
-    } else if (e.code == 'ArrowUp') {
+    } else if (e.code === 'ArrowUp') {
       isMove = true
       context = moveFocus(context, -context.width)
-    } else if (e.code == 'ArrowDown') {
+    } else if (e.code === 'ArrowDown') {
       isMove = true
       context = moveFocus(context, context.width)
-    } else if (e.key.length == 1) {
+    } else if (e.key.length === 1) {
       context.letters[context.focus].innerText = e.key.match(/\s/)
         ? '_'
         : e.key
@@ -94,8 +90,7 @@ function boot() {
       isMove = 1
     }
 
-    if (isMove)
-      updateFocus(context)
+    if (isMove) { updateFocus(context) }
   })
 }
 
