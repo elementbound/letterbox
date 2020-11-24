@@ -1,6 +1,17 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 
+;// CONCATENATED MODULE: ./data/messages.js
+function createMessage (type, data) {
+  return {
+    type, data
+  }
+}
+
+function createHiMessage () {
+  return createMessage('Hi')
+}
+
 ;// CONCATENATED MODULE: ./client/events/user-letter-change.js
 /**
  * An event describing a single letter change in the letterbox.
@@ -99,6 +110,7 @@ function handleKey (context, e) {
 
 
 
+
 let context = {
   width: 80,
   height: 24,
@@ -129,6 +141,10 @@ function wsConnect () {
   const webSocket = new WebSocket(url)
   webSocket.onopen = () => {
     console.log('Socket open!')
+
+    const message = JSON.stringify(createHiMessage())
+    console.log('Sending message', message)
+    webSocket.send(message)
   }
 }
 

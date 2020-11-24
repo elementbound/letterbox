@@ -1,5 +1,6 @@
-import UserLetterChangeEvent from './events/user-letter-change'
-import { generateItems, updateFocus, handleKey } from './letters'
+import { createHiMessage } from '../data/messages.js'
+import UserLetterChangeEvent from './events/user-letter-change.js'
+import { generateItems, updateFocus, handleKey } from './letters.js'
 
 let context = {
   width: 80,
@@ -31,6 +32,10 @@ function wsConnect () {
   const webSocket = new WebSocket(url)
   webSocket.onopen = () => {
     console.log('Socket open!')
+
+    const message = JSON.stringify(createHiMessage())
+    console.log('Sending message', message)
+    webSocket.send(message)
   }
 }
 

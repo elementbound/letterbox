@@ -1,4 +1,4 @@
-import UserLetterChangeEvent from "./events/user-letter-change"
+import UserLetterChangeEvent from './events/user-letter-change.js'
 
 export function generateItems (target, width, height) {
   const result = []
