@@ -56,6 +56,32 @@ function updateFocus (context) {
   )
 }
 
+function handleKey (e) {
+  let isMove = false
+
+  if (e.code === 'ArrowRight') {
+    isMove = true
+    context = moveFocus(context, 1)
+  } else if (e.code === 'ArrowLeft') {
+    isMove = true
+    context = moveFocus(context, -1)
+  } else if (e.code === 'ArrowUp') {
+    isMove = true
+    context = moveFocus(context, -context.width)
+  } else if (e.code === 'ArrowDown') {
+    isMove = true
+    context = moveFocus(context, context.width)
+  } else if (e.key.length === 1) {
+    context.letters[context.focus].innerText = e.key.match(/\s/)
+      ? '_'
+      : e.key
+    context = moveFocus(context, 1)
+    isMove = 1
+  }
+
+  if (isMove) { updateFocus(context) }
+}
+
 function boot () {
   const letterbox = document.querySelector('.letterbox')
   const letters = generateItems(letterbox, context.width, context.height)
@@ -67,31 +93,7 @@ function boot () {
   context.letters = letters
   updateFocus(context)
 
-  document.addEventListener('keydown', e => {
-    let isMove = false
-
-    if (e.code === 'ArrowRight') {
-      isMove = true
-      context = moveFocus(context, 1)
-    } else if (e.code === 'ArrowLeft') {
-      isMove = true
-      context = moveFocus(context, -1)
-    } else if (e.code === 'ArrowUp') {
-      isMove = true
-      context = moveFocus(context, -context.width)
-    } else if (e.code === 'ArrowDown') {
-      isMove = true
-      context = moveFocus(context, context.width)
-    } else if (e.key.length === 1) {
-      context.letters[context.focus].innerText = e.key.match(/\s/)
-        ? '_'
-        : e.key
-      context = moveFocus(context, 1)
-      isMove = 1
-    }
-
-    if (isMove) { updateFocus(context) }
-  })
+  document.addEventListener('keydown', handleKey)
 }
 
 boot()
