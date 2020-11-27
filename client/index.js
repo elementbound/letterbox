@@ -1,6 +1,16 @@
 import { createHiMessage } from '../data/messages.js'
+import registerChangeLetterAction from './actions/change-letter.js'
 import UserLetterChangeEvent from './events/user-letter-change.js'
 import { generateItems, updateFocus, handleKey } from './letters.js'
+
+/**
+ * @typedef {Object} AppContext
+ * @property {number} width letterbox width in characters
+ * @property {number} height letterbox height in characters
+ * @property {Node} letterbox letterbox DOM node
+ * @property {number} focus focused character index
+ * @property {WebSocket} webSocket web socket connection to server
+ */
 
 let context = {
   width: 80,
@@ -8,7 +18,9 @@ let context = {
 
   letterbox: undefined,
   letters: [],
-  focus: 0
+  focus: 0,
+
+  webSocket: undefined
 }
 
 function fitToScreen (element, scale) {
@@ -30,6 +42,9 @@ function wsConnect () {
   console.log('Connecting to', url)
 
   const webSocket = new WebSocket(url)
+  webSocket.sendObject = object =>
+    webSocket.send(JSON.stringify(object))
+
   webSocket.onopen = () => {
     console.log('Socket open!')
 
@@ -37,6 +52,8 @@ function wsConnect () {
     console.log('Sending message', message)
     webSocket.send(message)
   }
+
+  return webSocket
 }
 
 function boot () {
@@ -60,7 +77,10 @@ function boot () {
     console.log('User letter change!', event)
   })
 
-  wsConnect()
+  context.webSocket = wsConnect()
+
+  // Register actions
+  registerChangeLetterAction(context)
 }
 
 boot()

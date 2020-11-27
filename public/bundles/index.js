@@ -2,11 +2,6 @@
 /******/ 	"use strict";
 
 ;// CONCATENATED MODULE: ./data/messages.js
-const EventTypes = Object.freeze({
-  Hi: 'Hi',
-  ChangeLetter: 'Change-Letter'
-})
-
 function createMessage (type, data) {
   return {
     type, data
@@ -14,13 +9,7 @@ function createMessage (type, data) {
 }
 
 function createHiMessage () {
-  return createMessage(EventTypes.Hi)
-}
-
-function createChangeLetterMessage (index, value) {
-  return createMessage(EventTypes.ChangeLetter, {
-    index, value
-  })
+  return createMessage('Hi')
 }
 
 ;// CONCATENATED MODULE: ./client/events/user-letter-change.js
@@ -49,20 +38,6 @@ class UserLetterChangeEvent extends Event {
 }
 
 /* harmony default export */ const user_letter_change = (UserLetterChangeEvent);
-
-;// CONCATENATED MODULE: ./client/actions/change-letter.js
-
-
-
-/**
- * Catch and broadcast user letter change events from letterbox
- * @param {import('..').AppContext} context app context
- */
-function registerChangeLetterAction (context) {
-  context.letterbox.addEventListener(user_letter_change.eventName, event => {
-    context.webSocket.sendObject(createChangeLetterMessage(event.index, event.newValue))
-  })
-}
 
 ;// CONCATENATED MODULE: ./client/letters.js
 
@@ -136,25 +111,13 @@ function handleKey (context, e) {
 
 
 
-
-/**
- * @typedef {Object} AppContext
- * @property {number} width letterbox width in characters
- * @property {number} height letterbox height in characters
- * @property {Node} letterbox letterbox DOM node
- * @property {number} focus focused character index
- * @property {WebSocket} webSocket web socket connection to server
- */
-
 let context = {
   width: 80,
   height: 24,
 
   letterbox: undefined,
   letters: [],
-  focus: 0,
-
-  webSocket: undefined
+  focus: 0
 }
 
 function fitToScreen (element, scale) {
@@ -176,9 +139,6 @@ function wsConnect () {
   console.log('Connecting to', url)
 
   const webSocket = new WebSocket(url)
-  webSocket.sendObject = object =>
-    webSocket.send(JSON.stringify(object))
-
   webSocket.onopen = () => {
     console.log('Socket open!')
 
@@ -186,8 +146,6 @@ function wsConnect () {
     console.log('Sending message', message)
     webSocket.send(message)
   }
-
-  return webSocket
 }
 
 function boot () {
@@ -211,14 +169,11 @@ function boot () {
     console.log('User letter change!', event)
   })
 
-  context.webSocket = wsConnect()
-
-  // Register actions
-  registerChangeLetterAction(context)
+  wsConnect()
 }
 
 boot()
 
 /******/ })()
 ;
-//# sourceMappingURL=main.js.map
+//# sourceMappingURL=index.js.map

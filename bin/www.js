@@ -10,6 +10,7 @@ import ws from 'ws'
 import { WebSocketEventEmitter } from '../services/ws-event-emitter.js'
 import debug from 'debug'
 import hiHandler from '../handlers/hi.handler.js'
+import userChangeLetterHandler from '../handlers/user.letter.change.handler.js'
 
 const debugLogger = debug('letterbox-frontend:server')
 
@@ -113,4 +114,8 @@ wsServer.on('connection', socket => {
   })
 })
 
+/**
+ * Register WS handlers
+ */
 hiHandler(wsEvents)
+userChangeLetterHandler(wsEvents)
