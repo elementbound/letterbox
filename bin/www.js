@@ -4,9 +4,15 @@
  * Module dependencies.
  */
 
-const app = require('../app')
-const debug = require('debug')('letterbox-frontend:server')
-const http = require('http')
+import app from '../app.js'
+import { createServer } from 'http'
+import ws from 'ws'
+import { WebSocketEventEmitter } from '../services/ws-event-emitter.js'
+import debug from 'debug'
+import hiHandler from '../handlers/hi.handler.js'
+import userChangeLetterHandler from '../handlers/user.letter.change.handler.js'
+
+const debugLogger = debug('letterbox-frontend:server')
 
 /**
  * Get port from environment and store in Express.
@@ -19,7 +25,12 @@ app.set('port', port)
  * Create HTTP server.
  */
 
-const server = http.createServer(app)
+const server = createServer(app)
+
+/**
+ * Create WS server.
+ */
+const wsServer = new ws.Server({ server })
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -84,5 +95,35 @@ function onListening () {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port
-  debug('Listening on ' + bind)
+  debugLogger('Listening on ' + bind)
 }
+
+/**
+ * Listen to WS connect events
+ */
+const wsEvents = new WebSocketEventEmitter()
+
+wsServer.on('connection', socket => {
+  console.log('New connection!')
+
+  socket.on('message', data => {
+    const result = JSON.parse(data)
+
+    wsEvents.emit('message', socket, result)
+    socket.sendObject = (data) => socket.send(JSON.serialize(data))
+  })
+})
+
+wsServer.broadcast = data => {
+  wsServer.clients.forEach(ws => ws.send(data))
+}
+
+wsServer.broadcastObject = data => {
+  wsServer.clients.forEach(ws => ws.send(JSON.stringify(data)))
+}
+
+/**
+ * Register WS handlers
+ */
+hiHandler(wsServer, wsEvents)
+userChangeLetterHandler(wsServer, wsEvents)
