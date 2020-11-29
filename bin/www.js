@@ -14,7 +14,7 @@ import userChangeLetterHandler from '../handlers/user.letter.change.handler.js'
 import { createEmptyState, getCurrentState, isStateDirty, setInitialState } from '../services/letter-history.js'
 import { createStateUpdateMessage } from '../data/messages.js'
 
-const debugLogger = debug('letterbox-frontend:server')
+const debugLogger = debug('letterbox:server')
 
 /**
  * Get port from environment and store in Express.
