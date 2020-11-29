@@ -1,4 +1,5 @@
-import { createChangeLetterMessage, EventTypes } from '../data/messages.js'
+import { EventTypes } from '../data/messages.js'
+import { LetterChangeEntry, pushChange } from '../services/letter-history.js'
 
 export default function userChangeLetterHandler (wsServer, wsEvents) {
   wsEvents.on('message', (socket, message) => {
@@ -6,7 +7,12 @@ export default function userChangeLetterHandler (wsServer, wsEvents) {
       return
     }
 
-    wsServer.broadcastObject(createChangeLetterMessage(message.data.index, message.data.value))
+    const changeEntry = new LetterChangeEntry({
+      index: message.data.index,
+      value: message.data.value
+    })
+
+    pushChange(changeEntry)
 
     console.log(`Change character #${message.data.index} to ${message.data.value}`)
   })

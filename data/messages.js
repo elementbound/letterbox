@@ -1,6 +1,7 @@
 export const EventTypes = Object.freeze({
   Hi: 'Hi',
-  ChangeLetter: 'Change-Letter'
+  ChangeLetter: 'Change-Letter',
+  StateUpdate: 'State-Update'
 })
 
 /**
@@ -37,6 +38,23 @@ export function createChangeLetterMessage (index, value) {
 }
 
 /**
+ * Create a state update message.
+ *
+ * @param {string | string[]} state State
+ * @returns {StateUpdateMessage} Message
+ */
+export function createStateUpdateMessage (state) {
+  return {
+    type: EventTypes.StateUpdate,
+    data: {
+      state: Array.isArray(state)
+        ? state.join('')
+        : state
+    }
+  }
+}
+
+/**
  * @typedef {Object} GenericMessage
  * @property {string} type Message type
  * @property {*} data Message data
@@ -53,4 +71,11 @@ export function createChangeLetterMessage (index, value) {
  * @property {object} data Message data
  * @property {number} data.index Changed character index
  * @property {string} data.value Changed character value
+ */
+
+/**
+ * @typedef {Object} StateUpdateMessage
+ * @property {string} type Message type
+ * @property {object} data Message data
+ * @property {string} data.state State
  */

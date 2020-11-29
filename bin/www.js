@@ -11,6 +11,8 @@ import { WebSocketEventEmitter } from '../services/ws-event-emitter.js'
 import debug from 'debug'
 import hiHandler from '../handlers/hi.handler.js'
 import userChangeLetterHandler from '../handlers/user.letter.change.handler.js'
+import { createEmptyState, getCurrentState, isStateDirty, setInitialState } from '../services/letter-history.js'
+import { createStateUpdateMessage } from '../data/messages.js'
 
 const debugLogger = debug('letterbox-frontend:server')
 
@@ -105,12 +107,16 @@ const wsEvents = new WebSocketEventEmitter()
 
 wsServer.on('connection', socket => {
   console.log('New connection!')
+  socket.sendObject = (data) => socket.send(JSON.stringify(data))
 
+  // Update new client with current state
+  socket.sendObject(createStateUpdateMessage(getCurrentState()))
+
+  // Emit events on messages
   socket.on('message', data => {
     const result = JSON.parse(data)
 
     wsEvents.emit('message', socket, result)
-    socket.sendObject = (data) => socket.send(JSON.serialize(data))
   })
 })
 
@@ -127,3 +133,15 @@ wsServer.broadcastObject = data => {
  */
 hiHandler(wsServer, wsEvents)
 userChangeLetterHandler(wsServer, wsEvents)
+
+// Periodically push new state to clients
+setInitialState(createEmptyState(80 * 24))
+
+const statePushInterval = 1000 / 30
+setInterval(() => {
+  if (isStateDirty()) {
+    console.log('Broadcasting state')
+    const state = getCurrentState()
+    wsServer.broadcastObject(createStateUpdateMessage(state))
+  }
+}, statePushInterval)

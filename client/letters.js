@@ -6,7 +6,7 @@ export function generateItems (target, width, height) {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const element = document.createElement('span')
-      element.innerText = String.fromCharCode(48 + 64 * Math.random())
+      element.innerText = ' '
       target.appendChild(element)
 
       result.push(element)
