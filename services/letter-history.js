@@ -1,29 +1,7 @@
 import { range } from './utils.js'
+import { historyRepository, LetterChangeEntry } from '../data/history.js'
 
-export class LetterChangeEntry {
-  /**
-   * Create a letter change entry.
-   * @param {Object} options Options
-   * @param {number} options.index Changed letter index
-   * @param {string} options.value New letter value
-   * @param {number?} options.date Change timestamp
-   */
-  constructor (options) {
-    this.index = options.index
-    this.value = options.value
-    this.date = options.date ?? (+new Date())
-  }
-
-  /**
-   * Apply change to given state.
-   * @param {string[]} state Target state
-   */
-  apply (state) {
-    state[this.index] = this.value
-  }
-}
-
-const history = []
+let history = []
 let initialState = []
 let currentState = []
 let isDirty = false
@@ -38,6 +16,15 @@ function sortHistory () {
   history.sort((a, b) => a.date - b.date)
   isSorted = true
   console.log('History sorted')
+}
+
+/**
+ * Apply change to given state.
+ * @param {string[]} state Target state
+ * @param {LetterChangeEntry} change Change entry
+ */
+function applyChange (state, change) {
+  state[change.at] = change.value
 }
 
 export function createEmptyState (size) {
@@ -73,7 +60,7 @@ export function getCurrentState () {
 
     currentState = [...initialState]
     sortHistory()
-    history.forEach(change => change.apply(currentState))
+    history.forEach(change => applyChange(currentState, change))
     isDirty = false
 
     console.log('State updated!')
@@ -84,4 +71,10 @@ export function getCurrentState () {
 
 export function isStateDirty () {
   return isDirty
+}
+
+export async function initHistory () {
+  history = await historyRepository.listHistory()
+  console.log('Retrieved history from DB', history)
+  isDirty = true
 }

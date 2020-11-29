@@ -42,7 +42,7 @@ export function createChangeLetterMessage (index, value) {
  *
  * @param {number} width Width
  * @param {number} height Height
- * @param {string | string[]} state State
+ * @param {string[]} state State
  * @returns {StateUpdateMessage} Message
  */
 export function createStateUpdateMessage (width, height, state) {
@@ -51,9 +51,7 @@ export function createStateUpdateMessage (width, height, state) {
     data: {
       width,
       height,
-      state: Array.isArray(state)
-        ? state.join('')
-        : state
+      state
     }
   }
 }

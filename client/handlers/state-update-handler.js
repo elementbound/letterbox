@@ -26,7 +26,7 @@ function handleStateUpdate (message) {
   }
 
   range(data.state.length).forEach(i => {
-    context.letters[i].innerText = data.state.charAt(i)
+    context.letters[i].innerText = data.state[i]
   })
 }
 

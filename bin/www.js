@@ -11,7 +11,7 @@ import { WebSocketEventEmitter } from '../services/ws-event-emitter.js'
 import debug from 'debug'
 import hiHandler from '../handlers/hi.handler.js'
 import userChangeLetterHandler from '../handlers/user.letter.change.handler.js'
-import { createEmptyState, getCurrentState, isStateDirty, setInitialState } from '../services/letter-history.js'
+import { createEmptyState, getCurrentState, initHistory, isStateDirty, setInitialState } from '../services/letter-history.js'
 import { createStateUpdateMessage } from '../data/messages.js'
 import config from '../services/config.js'
 
@@ -139,6 +139,7 @@ userChangeLetterHandler(wsServer, wsEvents)
 
 // Set initial state
 setInitialState(createEmptyState(config.letterbox.width * config.letterbox.height))
+initHistory()
 
 // Periodically push new state to clients
 const statePushInterval = config.letterbox.updateInterval
