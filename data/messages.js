@@ -40,13 +40,17 @@ export function createChangeLetterMessage (index, value) {
 /**
  * Create a state update message.
  *
+ * @param {number} width Width
+ * @param {number} height Height
  * @param {string | string[]} state State
  * @returns {StateUpdateMessage} Message
  */
-export function createStateUpdateMessage (state) {
+export function createStateUpdateMessage (width, height, state) {
   return {
     type: EventTypes.StateUpdate,
     data: {
+      width,
+      height,
       state: Array.isArray(state)
         ? state.join('')
         : state

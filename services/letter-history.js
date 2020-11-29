@@ -41,7 +41,7 @@ function sortHistory () {
 }
 
 export function createEmptyState (size) {
-  return range(size).map(() => '')
+  return range(size).map(() => ' ')
 }
 
 /**

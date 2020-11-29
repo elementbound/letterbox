@@ -13,6 +13,7 @@ import hiHandler from '../handlers/hi.handler.js'
 import userChangeLetterHandler from '../handlers/user.letter.change.handler.js'
 import { createEmptyState, getCurrentState, isStateDirty, setInitialState } from '../services/letter-history.js'
 import { createStateUpdateMessage } from '../data/messages.js'
+import config from '../services/config.js'
 
 const debugLogger = debug('letterbox:server')
 
@@ -20,7 +21,7 @@ const debugLogger = debug('letterbox:server')
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3000')
+const port = normalizePort(config.server.port || '3000')
 app.set('port', port)
 
 /**
@@ -110,7 +111,9 @@ wsServer.on('connection', socket => {
   socket.sendObject = (data) => socket.send(JSON.stringify(data))
 
   // Update new client with current state
-  socket.sendObject(createStateUpdateMessage(getCurrentState()))
+  socket.sendObject(
+    createStateUpdateMessage(config.letterbox.width, config.letterbox.height, getCurrentState())
+  )
 
   // Emit events on messages
   socket.on('message', data => {
@@ -134,14 +137,17 @@ wsServer.broadcastObject = data => {
 hiHandler(wsServer, wsEvents)
 userChangeLetterHandler(wsServer, wsEvents)
 
-// Periodically push new state to clients
-setInitialState(createEmptyState(80 * 24))
+// Set initial state
+setInitialState(createEmptyState(config.letterbox.width * config.letterbox.height))
 
-const statePushInterval = 1000 / 30
+// Periodically push new state to clients
+const statePushInterval = config.letterbox.updateInterval
 setInterval(() => {
   if (isStateDirty()) {
     console.log('Broadcasting state')
     const state = getCurrentState()
-    wsServer.broadcastObject(createStateUpdateMessage(state))
+    wsServer.broadcastObject(
+      createStateUpdateMessage(config.letterbox.width, config.letterbox.height, state)
+    )
   }
 }, statePushInterval)

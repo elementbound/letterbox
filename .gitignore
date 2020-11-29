@@ -159,3 +159,7 @@ docs
 
 # webpack output
 public/bundles
+
+# .env
+.env*
+!.env.example

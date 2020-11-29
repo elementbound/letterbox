@@ -1,6 +1,7 @@
 import { EventTypes } from '../../data/messages.js'
 import { range } from '../../services/utils.js'
-import { getContext } from '../context.js'
+import { getContext, updateContext } from '../context.js'
+import { generateItems } from '../letters.js'
 
 /**
  * Handle a state update message.
@@ -13,6 +14,16 @@ function handleStateUpdate (message) {
 
   const data = message.data
   const context = getContext()
+
+  if (data.width !== context.width || data.height !== context.height) {
+    context.letters.forEach(letter =>
+      context.letterbox.removeChild(letter)
+    )
+
+    const letters = generateItems(context.letterbox, data.width, data.height)
+
+    updateContext({ letters, width: data.width, height: data.height })
+  }
 
   range(data.state.length).forEach(i => {
     context.letters[i].innerText = data.state.charAt(i)
