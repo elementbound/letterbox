@@ -17,8 +17,6 @@ COPY package-lock.json ./
 COPY package.json ./
 COPY webpack.config.cjs ./
 
-RUN ls -la /letterbox
-
 RUN npm install
 RUN npm audit
 RUN npm run build

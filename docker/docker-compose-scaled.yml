@@ -1,0 +1,43 @@
+version: "3"
+services:
+  backend:
+    build: ../
+    ports:
+      - "3000"
+    environment:
+      PORT: 3000
+      LETTERBOX_WIDTH: 80
+      LETTERBOX_HEIGHT: 24
+      LETTERBOX_UPDATE_INTERVAL_MS: 33
+      DATABASE_HOST: "db"
+      DATABASE_PORT: 3306
+      DATABASE_USER: "root"
+      DATABASE_PASSWORD: "XdC5tpJYNRKUYh3MtckL9awbQzTDA3wR"
+      DATABASE_POOL_SIZE: 8
+      DATABASE_NAME: "letterbox"
+      MQ_ADDRESS: "amqp://mq:5672"
+    depends_on:
+      - db
+      - mq
+  db:
+    build: letterbox-db
+    environment:
+      MYSQL_ROOT_PASSWORD: "XdC5tpJYNRKUYh3MtckL9awbQzTDA3wR"
+  db-admin:
+    image: "phpmyadmin"
+    environment:
+      PMA_HOST: 'db'
+      PMA_USER: 'root'
+      PMA_PASSWORD: "XdC5tpJYNRKUYh3MtckL9awbQzTDA3wR"
+    ports:
+      - "34070:80"
+  mq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "34090:15672"
+  load-balancer:
+    build: letterbox-load-balancer
+    depends_on:
+      - backend
+    ports:
+      - "34000:4000"
