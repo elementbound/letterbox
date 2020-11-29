@@ -156,3 +156,6 @@ Sessionx.vim
 
 # jsdoc output
 docs
+
+# webpack output
+public/bundles
