@@ -14,6 +14,8 @@ import userChangeLetterHandler from '../handlers/user.letter.change.handler.js'
 import { createEmptyState, getCurrentState, initHistory, isStateDirty, setInitialState } from '../services/letter-history.js'
 import { createStateUpdateMessage } from '../data/messages.js'
 import config from '../services/config.js'
+import { historyEvents, initHistoryMq } from '../services/history-mq.js'
+import registerMQChangeHandler from '../handlers/mq.letter.change.handler.js'
 
 const debugLogger = debug('letterbox:server')
 
@@ -151,4 +153,12 @@ setInterval(() => {
       createStateUpdateMessage(config.letterbox.width, config.letterbox.height, state)
     )
   }
-}, statePushInterval)
+}, statePushInterval);
+
+/**
+ * Setup message queue handling
+ */
+(async () => {
+  await initHistoryMq()
+  registerMQChangeHandler(historyEvents)
+})()

@@ -1,6 +1,6 @@
 {
   "name": "letterbox",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,6 +11,7 @@
     "doc": "jsdoc -r -d docs routes"
   },
   "dependencies": {
+    "amqplib": "^0.6.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv-safe": "^8.2.0",

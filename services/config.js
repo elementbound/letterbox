@@ -41,6 +41,10 @@ const config = {
     password: process.env.DATABASE_PASSWORD,
     poolSize: asInt(process.env.DATABASE_POOL_SIZE),
     dbName: process.env.DATABASE_NAME
+  },
+
+  mq: {
+    address: process.env.MQ_ADDRESS
   }
 }
 
@@ -58,6 +62,7 @@ export default config
  * @property {ServerConfig} server Server config
  * @property {LetterboxConfig} letterbox Letterbox config
  * @property {DatabaseConfig} db Database config
+ * @property {MQConfig} mq MQ config
  */
 
 /**
@@ -80,4 +85,9 @@ export default config
  * @property {string} password Database user password
  * @property {number} poolSize Connection pool size
  * @property {string} dbName Database name
+ */
+
+/**
+ * @typedef MQConfig
+ * @property {string} address MQ host
  */

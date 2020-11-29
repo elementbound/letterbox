@@ -1,5 +1,6 @@
 import { historyRepository, LetterChangeEntry } from '../data/history.js'
 import { EventTypes } from '../data/messages.js'
+import { postChangeEvent } from '../services/history-mq.js'
 import { pushChange } from '../services/letter-history.js'
 
 export default function userChangeLetterHandler (wsServer, wsEvents) {
@@ -13,9 +14,14 @@ export default function userChangeLetterHandler (wsServer, wsEvents) {
       value: message.data.value
     })
 
-    const result = await historyRepository.save(changeEntry)
+    // Persist change in DB
+    await historyRepository.save(changeEntry)
+
+    // Push change to local history
     pushChange(changeEntry)
-    console.log('Change persist result', result)
+
+    // Push change to message queue to notify other running instances
+    postChangeEvent(changeEntry)
 
     console.log(`Change character #${message.data.index} to ${message.data.value}`)
   })
