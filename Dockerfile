@@ -16,9 +16,10 @@ COPY app.js ./
 COPY package-lock.json ./
 COPY package.json ./
 COPY webpack.config.cjs ./
+COPY letterbox.sh ./
 
 RUN npm install
 RUN npm audit
 RUN npm run build
 
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["/letterbox/letterbox.sh"]

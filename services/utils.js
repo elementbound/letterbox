@@ -2,10 +2,22 @@ export function range (n) {
   return [...new Array(n).keys()]
 }
 
+export function identity (a) {
+  return a
+}
+
 export async function sleep (time) {
   return new Promise(resolve => {
     setTimeout(resolve, time)
   })
+}
+
+export function tryParseJson (content) {
+  try {
+    return JSON.parse(content)
+  } catch (e) {
+    return undefined
+  }
 }
 
 export function logRetriesWrapper (name) {

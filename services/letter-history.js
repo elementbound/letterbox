@@ -4,6 +4,7 @@ import { historyRepository, LetterChangeEntry } from '../data/history.js'
 let history = []
 let initialState = []
 let currentState = []
+let lastSnapshotDate = new Date(0)
 let isDirty = false
 let isSorted = false
 
@@ -71,6 +72,24 @@ export function getCurrentState () {
 
 export function isStateDirty () {
   return isDirty
+}
+
+/**
+ * Push new snapshot to history.
+ * @param {import('../data/snapshots.js').SnapshotEntry} snapshot Snapshot entry
+ */
+export function pushSnapshot (snapshot) {
+  if (snapshot.date < lastSnapshotDate) {
+    console.log('Rejecting older snapshot', snapshot)
+    return
+  }
+
+  history = history.filter(changeEntry => changeEntry.date > snapshot.date)
+  initialState = snapshot.state
+
+  lastSnapshotDate = snapshot.date
+  isDirty = true
+  isSorted = false
 }
 
 export async function initHistory () {

@@ -8,3 +8,10 @@ CREATE TABLE IF NOT EXISTS history (
     `value` CHAR(2) NOT NULL ,
     INDEX `date_index` (`date`)
 );
+
+CREATE TABLE IF NOT EXISTS snapshots (
+  `date` datetime NOT NULL,
+  `state` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+
+  PRIMARY KEY (date)
+);

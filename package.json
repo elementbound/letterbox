@@ -1,11 +1,13 @@
 {
   "name": "letterbox",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "node ./bin/www.js",
     "start:dev": "concurrently \"webpack -w\" \"nodemon ./bin/www\"",
+    "job": "node job.js",
+    "job:dev": "nodemon job.js",
     "build": "webpack",
     "lint": "eslint bin/www.js routes/**.js app.js",
     "doc": "jsdoc -r -d docs routes"

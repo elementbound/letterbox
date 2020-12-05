@@ -4,7 +4,7 @@ import { getDatabase } from '../services/database.js'
 export class LetterChangeEntry {
   /**
    * Create a letter change entry.
-   * @param {Object} options Options
+   * @param {object} options Options
    * @param {number} options.at Changed letter index
    * @param {string} options.value New letter value
    * @param {string?} options.id Entry UUID
@@ -36,8 +36,27 @@ export class HistoryRepository {
       [changeEntry.id, new Date(changeEntry.date), changeEntry.at, changeEntry.value])
   }
 
+  /**
+   * List the entire history
+   *
+   * @returns {Promise<LetterChangeEntry[]>} History
+   */
   async listHistory () {
     return (await getDatabase().query('SELECT * FROM `history`'))
+      .map(row => new LetterChangeEntry(row))
+  }
+
+  /**
+   * List the history beginning from a given date.
+   *
+   * @param {Date} date Start date
+   * @returns {Promise<LetterChangeEntry[]>} History
+   */
+  async listHistorySince (date) {
+    const query = `SELECT * FROM history
+      WHERE date > ?`
+
+    return (await getDatabase().query(query, [date]))
       .map(row => new LetterChangeEntry(row))
   }
 }

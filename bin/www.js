@@ -14,11 +14,13 @@ import userChangeLetterHandler from '../handlers/user.letter.change.handler.js'
 import { createEmptyState, getCurrentState, initHistory, isStateDirty, setInitialState } from '../services/letter-history.js'
 import { createStateUpdateMessage } from '../data/messages.js'
 import config from '../services/config.js'
-import { historyEvents, initHistoryMq } from '../services/history-mq.js'
+import { historyEvents } from '../services/history-mq.js'
 import registerMQChangeHandler from '../handlers/mq.letter.change.handler.js'
 import { logRetriesWrapper, retryWrapper, wrap } from '../services/utils.js'
 import { getMQConnection } from '../services/mq.js'
 import { connectToDatabase } from '../services/database.js'
+import { snapshotEvents } from '../services/snapshot-mq.js'
+import registerMQSnapshotHandler from '../handlers/mq.snapshot.handler.js'
 
 const debugLogger = debug('letterbox:server')
 
@@ -179,6 +181,8 @@ function onListening () {
   /**
    * Setup message queue handling
    */
-  await initHistoryMq()
+  await historyEvents.open()
+  await snapshotEvents.open()
   registerMQChangeHandler(historyEvents)
+  registerMQSnapshotHandler(snapshotEvents)
 })()

@@ -1,6 +1,6 @@
 import { historyRepository, LetterChangeEntry } from '../data/history.js'
 import { EventTypes } from '../data/messages.js'
-import { postChangeEvent } from '../services/history-mq.js'
+import { historyEvents } from '../services/history-mq.js'
 import { pushChange } from '../services/letter-history.js'
 
 export default function userChangeLetterHandler (wsServer, wsEvents) {
@@ -21,7 +21,7 @@ export default function userChangeLetterHandler (wsServer, wsEvents) {
     pushChange(changeEntry)
 
     // Push change to message queue to notify other running instances
-    postChangeEvent(changeEntry)
+    historyEvents.publish(changeEntry)
 
     console.log(`Change character #${message.data.index} to ${message.data.value}`)
   })
