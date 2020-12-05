@@ -15,7 +15,11 @@ services:
       DATABASE_PASSWORD: "XdC5tpJYNRKUYh3MtckL9awbQzTDA3wR"
       DATABASE_POOL_SIZE: 8
       DATABASE_NAME: "letterbox"
+      DATABASE_ATTEMPT_COUNT: 10
+      DATABASE_ATTEMPT_REST: 3000
       MQ_ADDRESS: "amqp://mq:5672"
+      MQ_ATTEMPT_COUNT: 20
+      MQ_ATTEMPT_REST: 3000
     depends_on:
       - db
       - mq

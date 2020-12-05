@@ -16,6 +16,9 @@ import { createStateUpdateMessage } from '../data/messages.js'
 import config from '../services/config.js'
 import { historyEvents, initHistoryMq } from '../services/history-mq.js'
 import registerMQChangeHandler from '../handlers/mq.letter.change.handler.js'
+import { logRetriesWrapper, retryWrapper, wrap } from '../services/utils.js'
+import { getMQConnection } from '../services/mq.js'
+import { connectToDatabase } from '../services/database.js'
 
 const debugLogger = debug('letterbox:server')
 
@@ -103,62 +106,79 @@ function onListening () {
   debugLogger('Listening on ' + bind)
 }
 
-/**
- * Listen to WS connect events
- */
-const wsEvents = new WebSocketEventEmitter()
-
-wsServer.on('connection', socket => {
-  console.log('New connection!')
-  socket.sendObject = (data) => socket.send(JSON.stringify(data))
-
-  // Update new client with current state
-  socket.sendObject(
-    createStateUpdateMessage(config.letterbox.width, config.letterbox.height, getCurrentState())
-  )
-
-  // Emit events on messages
-  socket.on('message', data => {
-    const result = JSON.parse(data)
-
-    wsEvents.emit('message', socket, result)
-  })
-})
-
-wsServer.broadcast = data => {
-  wsServer.clients.forEach(ws => ws.send(data))
-}
-
-wsServer.broadcastObject = data => {
-  wsServer.clients.forEach(ws => ws.send(JSON.stringify(data)))
-}
-
-/**
- * Register WS handlers
- */
-hiHandler(wsServer, wsEvents)
-userChangeLetterHandler(wsServer, wsEvents)
-
-// Set initial state
-setInitialState(createEmptyState(config.letterbox.width * config.letterbox.height))
-initHistory()
-
-// Periodically push new state to clients
-const statePushInterval = config.letterbox.updateInterval
-setInterval(() => {
-  if (isStateDirty()) {
-    console.log('Broadcasting state')
-    const state = getCurrentState()
-    wsServer.broadcastObject(
-      createStateUpdateMessage(config.letterbox.width, config.letterbox.height, state)
-    )
-  }
-}, statePushInterval);
-
-/**
- * Setup message queue handling
- */
 (async () => {
+  /**
+   * Setup dependencies with retry
+   */
+  try {
+    console.log('Attempting connections')
+
+    await Promise.all([
+      wrap(connectToDatabase, logRetriesWrapper('Connect to DB'))
+        .wrap(retryWrapper(config.db.attemptCount, config.db.attemptRest))(),
+      wrap(getMQConnection, logRetriesWrapper('Connect to MQ'))
+        .wrap(retryWrapper(config.mq.attemptCount, config.mq.attemptRest))()
+    ])
+  } catch (e) {
+    console.error('Init failed with exception', e)
+    process.exit(1)
+  }
+
+  const wsEvents = new WebSocketEventEmitter()
+
+  wsServer.broadcast = data => {
+    wsServer.clients.forEach(ws => ws.send(data))
+  }
+
+  wsServer.broadcastObject = data => {
+    wsServer.clients.forEach(ws => ws.send(JSON.stringify(data)))
+  }
+
+  /**
+   * Register WS handlers
+   */
+  hiHandler(wsServer, wsEvents)
+  userChangeLetterHandler(wsServer, wsEvents)
+
+  // Set initial state
+  setInitialState(createEmptyState(config.letterbox.width * config.letterbox.height))
+  initHistory()
+
+  // Periodically push new state to clients
+  const statePushInterval = config.letterbox.updateInterval
+  setInterval(() => {
+    if (isStateDirty()) {
+      console.log('Broadcasting state')
+      const state = getCurrentState()
+      wsServer.broadcastObject(
+        createStateUpdateMessage(config.letterbox.width, config.letterbox.height, state)
+      )
+    }
+  }, statePushInterval)
+
+  /**
+   * Listen to WS connect events
+   */
+  wsServer.on('connection', socket => {
+    console.log('New connection!')
+    socket.sendObject = (data) => socket.send(JSON.stringify(data))
+
+    // Update new client with current state
+    socket.sendObject(
+      createStateUpdateMessage(config.letterbox.width, config.letterbox.height, getCurrentState())
+    )
+
+    // Emit events on messages
+    socket.on('message', data => {
+      const result = JSON.parse(data)
+
+      wsEvents.emit('message', socket, result)
+    })
+  })
+
+  /**
+   * Setup message queue handling
+   */
   await initHistoryMq()
   registerMQChangeHandler(historyEvents)
 })()

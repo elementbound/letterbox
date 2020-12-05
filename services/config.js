@@ -40,11 +40,15 @@ const config = {
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     poolSize: asInt(process.env.DATABASE_POOL_SIZE),
-    dbName: process.env.DATABASE_NAME
+    dbName: process.env.DATABASE_NAME,
+    attemptCount: asInt(process.env.DATABASE_ATTEMPT_COUNT),
+    attemptRest: asInt(process.env.DATABASE_ATTEMPT_REST)
   },
 
   mq: {
-    address: process.env.MQ_ADDRESS
+    address: process.env.MQ_ADDRESS,
+    attemptCount: asInt(process.env.MQ_ATTEMPT_COUNT),
+    attemptRest: asInt(process.env.MQ_ATTEMPT_REST)
   }
 }
 
@@ -85,9 +89,13 @@ export default config
  * @property {string} password Database user password
  * @property {number} poolSize Connection pool size
  * @property {string} dbName Database name
+ * @property {number} attemptCount Attempt count to connect to database
+ * @property {number} attemptRest Rest between connection attempts
  */
 
 /**
  * @typedef MQConfig
  * @property {string} address MQ host
+ * @property {number} attemptCount Attempt count to connect to MQ
+ * @property {number} attemptRest Rest between connection attempts
  */

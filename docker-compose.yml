@@ -11,24 +11,27 @@ services:
       LETTERBOX_UPDATE_INTERVAL_MS: 33
       DATABASE_HOST: "db"
       DATABASE_PORT: 3306
-      DATABASE_USER: "letterbox"
+      DATABASE_USER: "root"
       DATABASE_PASSWORD: "va6JShEUZ3MqHtFZ"
       DATABASE_POOL_SIZE: 8
       DATABASE_NAME: "letterbox"
+      DATABASE_ATTEMPT_COUNT: 10
+      DATABASE_ATTEMPT_REST: 3000
       MQ_ADDRESS: "amqp://mq:5672"
+      MQ_ATTEMPT_COUNT: 20
+      MQ_ATTEMPT_REST: 3000
     depends_on:
       - db
       - mq
   db:
     build: ./docker/letterbox-db
     environment:
-      MYSQL_USER: "letterbox"
-      MYSQL_PASSWORD: "va6JShEUZ3MqHtFZ"
+      MYSQL_ROOT_PASSWORD: "va6JShEUZ3MqHtFZ"
   db-admin:
     image: "phpmyadmin"
     environment:
       PMA_HOST: 'db'
-      PMA_USER: "letterbox"
+      PMA_USER: "root"
       PMA_PASSWORD: "va6JShEUZ3MqHtFZ"
     ports:
       - "34070:80"

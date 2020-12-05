@@ -1,4 +1,5 @@
 CREATE DATABASE IF NOT EXISTS letterbox;
+
 USE letterbox;
 
 CREATE TABLE IF NOT EXISTS history (
