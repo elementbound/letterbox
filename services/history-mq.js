@@ -21,6 +21,14 @@ const receivedMessageIds = new Set()
 
 export const historyEvents = new HistoryMQEventEmitter()
 
+function tryParseJson (content) {
+  try {
+    return JSON.parse(content)
+  } catch (e) {
+    return undefined
+  }
+}
+
 export async function initHistoryMq () {
   const conn = await getMQConnection()
   channel = await conn.createChannel()
@@ -34,9 +42,18 @@ export async function initHistoryMq () {
   channel.bindQueue(queue, EXCHANGE_NAME, '')
 
   channel.consume(queue, message => {
-    const content = new LetterChangeEntry(JSON.parse(message.content.toString()))
+    const parsed = tryParseJson(message.content.toString())
+    if (!parsed) {
+      console.log('Rejecting unparseable message', message.content.toString())
+      return
+    }
+
+    const content = new LetterChangeEntry(parsed)
+
+    console.log('Received message from MQ', message.content.toString())
 
     if (receivedMessageIds.has(content.id) || sentMessageIds.has(content.id)) {
+      console.log('Rejecting message with known id', content.id)
       return
     }
 
@@ -54,6 +71,11 @@ export function postChangeEvent (event) {
     throw new Error('Posted change event is not instance of LetterChangeEntry')
   }
 
-  channel.sendToQueue(queue, Buffer.from(JSON.stringify(event)))
+  const result = channel.publish(EXCHANGE_NAME, '', Buffer.from(JSON.stringify(event)))
+  if (!result) {
+    console.warn('Failed to broadcast message on MQ', event)
+    return
+  }
+
   sentMessageIds.add(event.id)
 }
