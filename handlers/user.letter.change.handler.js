@@ -22,7 +22,5 @@ export default function userChangeLetterHandler (wsServer, wsEvents) {
 
     // Push change to message queue to notify other running instances
     historyEvents.publish(changeEntry)
-
-    console.log(`Change character #${message.data.index} to ${message.data.value}`)
   })
 }

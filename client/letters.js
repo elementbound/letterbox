@@ -35,8 +35,6 @@ export function moveFocus (context, offset) {
  * @param {import('./context.js').AppContext} context App context
  */
 export function updateFocus (context) {
-  console.log('Updating focus on context', context)
-
   context.letters.forEach((letter, index) =>
     index === context.focus
       ? letter.classList.add('highlight')

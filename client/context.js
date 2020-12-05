@@ -31,12 +31,7 @@ export function getContext () {
 }
 
 export function updateContext (data) {
-  console.log('Updating context', { context, data })
-
   Object.assign(context, data)
-
-  console.log('Resulting context', context)
-
   changeListeners.forEach(listener => listener(context))
 }
 

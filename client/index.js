@@ -60,10 +60,6 @@ function boot () {
     updateContext(handleKey(getContext(), event))
   })
 
-  letterbox.addEventListener(UserLetterChangeEvent.eventName, event => {
-    console.log('User letter change!', event)
-  })
-
   context.webSocket = wsConnect()
 
   // Register actions

@@ -21,7 +21,6 @@ export function connectToDatabase () {
           console.error('Connection failed', err)
           reject(err)
         } else {
-          console.log('Connection successful', pool, pool.query)
           pool.query = util.promisify(pool.query).bind(pool)
           databaseConnectionPool = pool
           resolve(databaseConnectionPool)

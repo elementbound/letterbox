@@ -6,7 +6,6 @@ import { pushSnapshot } from '../services/letter-history.js'
  */
 export default function registerMQSnapshotHandler (snapshotEvents) {
   snapshotEvents.on('message', message => {
-    console.log('Received snapshot from MQ, pushing to history')
     pushSnapshot(message)
   })
 }
