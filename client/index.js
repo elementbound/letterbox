@@ -1,7 +1,6 @@
 import { createHiMessage } from '../data/messages.js'
 import registerChangeLetterAction from './actions/change-letter.js'
 import { getContext, updateContext } from './context.js'
-import UserLetterChangeEvent from './events/user-letter-change.js'
 import { registerChangeLetterHandler } from './handlers/change-letter-handler.js'
 import { registerStateUpdateHandler } from './handlers/state-update-handler.js'
 import { generateItems, updateFocus, handleKey } from './letters.js'
