@@ -9,17 +9,6 @@ spec:
       app: "rabbitmq"
   # headless service that gives network identity to the RMQ nodes, and enables them to cluster
   serviceName: rabbitmq-headless # serviceName is the name of the service that governs this StatefulSet. This service must exist before the StatefulSet, and is responsible for the network identity of the set. Pods get DNS/hostnames that follow the pattern: pod-specific-string.serviceName.default.svc.cluster.local where "pod-specific-string" is managed by the StatefulSet controller.
-  # volumeClaimTemplates:
-  # - metadata:
-  #     name: rabbitmq-data
-  #     namespace: letterbox-mq
-  #   spec:
-  #     storageClassName: standard
-  #     accessModes:
-  #     - ReadWriteOnce
-  #     resources:
-  #       requests:
-  #         storage: "100Mi"
   template:
     metadata:
       name: rabbitmq
@@ -59,9 +48,6 @@ spec:
       # and Kubernetes Config Maps are mounted as read-only since Kubernetes 1.9.4
       - name: rabbitmq-config-rw
         emptyDir: {}
-      # - name: rabbitmq-data
-      #   persistentVolumeClaim:
-      #     claimName: rabbitmq-data
       serviceAccount: rabbitmq
       # The Docker image runs as the `rabbitmq` user with uid 999 
       # and writes to the `rabbitmq.conf` file
@@ -82,10 +68,6 @@ spec:
         # this should have writeable access, this might be a problem
         - name: rabbitmq-config-rw
           mountPath: "/etc/rabbitmq"
-          # mountPath: "/etc/rabbitmq/conf.d/"
-        # rabbitmq data directory
-        # - name: rabbitmq-data
-        #   mountPath: "/var/lib/rabbitmq/mnesia"
         env:
         - name: RABBITMQ_DEFAULT_PASS
           valueFrom:
