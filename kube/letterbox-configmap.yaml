@@ -1,0 +1,20 @@
+apiVersion: v1
+data:
+  DATABASE_ATTEMPT_COUNT: "5"
+  DATABASE_ATTEMPT_REST: "4000"
+  DATABASE_HOST: letterbox-db-svc
+  DATABASE_NAME: letterbox
+  DATABASE_POOL_SIZE: "8"
+  DATABASE_PORT: "3306"
+  LETTERBOX_HEIGHT: "24"
+  LETTERBOX_UPDATE_INTERVAL_MS: "33"
+  LETTERBOX_WIDTH: "80"
+  MQ_ADDRESS: amqp://rabbitmq-client:5672
+  MQ_ATTEMPT_COUNT: "5"
+  MQ_ATTEMPT_REST: "4000"
+  PORT: "3000"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: letterbox-config
+  namespace: letterbox
