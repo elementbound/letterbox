@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: letterbox-db
+  name: letterbox-db
+  namespace: letterbox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: letterbox-db
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: letterbox-db
+    spec:
+      containers:
+      - image: elementbound/letterbox-db
+        name: letterbox-db
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: letterbox-db-root
+              key: MYSQL_ROOT_PASSWORD
