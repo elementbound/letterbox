@@ -1,0 +1,42 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: letterbox-cronjob
+  namespace: letterbox
+spec:
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+      name: letterbox-cronjob
+      namespace: letterbox
+    spec:
+      template:
+        metadata:
+          namespace: letterbox
+        spec:
+          containers:
+          - image: elementbound/letterbox
+            name: letterbox-cronjob
+            envFrom:
+            - configMapRef:
+                name: letterbox-config
+            env:
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: letterbox-db-root
+                  key: DATABASE_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: letterbox-db-root
+                  key: DATABASE_PASSWORD
+            - name: MQ_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: letterbox-mq-secret
+                  key: url
+            - name: AS_JOB
+              value: "true"
+          restartPolicy: OnFailure
+  schedule: '*/10 * * * *'
