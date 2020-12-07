@@ -13,6 +13,7 @@ COPY services ./services/
 COPY .env.example ./
 COPY .eslintrc.js ./
 COPY app.js ./
+COPY job.js ./
 COPY package-lock.json ./
 COPY package.json ./
 COPY webpack.config.cjs ./
