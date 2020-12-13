@@ -10,3 +10,9 @@ Make sure to read the guide above, which describes the process in details. Pleas
 on your cluster *will not* result in a running RabbitMQ StatefulSet. In addition to these files, you will need to create
 a secret for the Erlang cookie and another secret with the administrator credentials. For security reasons these are not
 present in this repository, but the linked guide describes the process very well.
+
+## License
+
+To the contents of this directory, the example repository's license applies.
+
+See: <https://github.com/rabbitmq/diy-kubernetes-examples>
